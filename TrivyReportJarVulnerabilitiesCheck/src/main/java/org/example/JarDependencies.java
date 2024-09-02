@@ -5,7 +5,6 @@ import org.example.dto.JSonRoot;
 import org.example.dto.PackageDetails;
 import org.example.dto.VulnerabilityPlatform;
 
-import java.awt.*;
 import java.util.*;
 
 public class JarDependencies {
@@ -13,6 +12,7 @@ public class JarDependencies {
     private HashMap<String, PackageDetails> dependencyMap;
 
     private final String springBootDependenciesFixedVersion = "3.3.2";
+    private final String guavaDependencyFixedVersion = "33.3.0-jre";
 
     //Create comparator object for sorting the version descending.
     public static Comparator<String> versionComparator = new Comparator<String>() {
@@ -21,20 +21,37 @@ public class JarDependencies {
             String[] version1 = v1.split("\\.");
             String[] version2 = v2.split("\\.");
             int len = Math.max(version1.length, version2.length);
+
             for (int i = 0; i < len; i++) {
-                Integer num1 = 0;
-                if(i< version1.length)
-                    num1 = Integer.parseInt(version1[i]);
-                Integer num2 = 0;
-                if(i< version2.length)
-                    num2 = Integer.parseInt(version2[i]);
-                int comparison = num2.compareTo(num1);
-                if(comparison != 0)
-                    return comparison;
+                String part1 = i < version1.length ? version1[i] : "0";
+                String part2 = i < version2.length ? version2[i] : "0";
+
+                String[] part1Tokens = part1.split("-|\\+");
+                String[] part2Tokens = part2.split("-|\\+");
+
+                for (int j = 0; j < Math.max(part1Tokens.length, part2Tokens.length); j++) {
+                    String token1 = j < part1Tokens.length ? part1Tokens[j] : "0";
+                    String token2 = j < part2Tokens.length ? part2Tokens[j] : "0";
+
+                    try {
+                        int num1 = Integer.parseInt(token1);
+                        int num2 = Integer.parseInt(token2);
+                        int comparison = Integer.compare(num1, num2);
+                        if (comparison != 0) {
+                            return comparison;
+                        }
+                    } catch (NumberFormatException e) {
+                        int comparison = token1.compareTo(token2);
+                        if (comparison != 0) {
+                            return comparison;
+                        }
+                    }
+                }
             }
             return 0;
         }
     };
+
 
     public JarDependencies() {
         this.dependencyMap = new HashMap<>();
@@ -55,7 +72,7 @@ public class JarDependencies {
             IterateHeader(header);
         }
 
-        AddSpringDependencyManagementEntry(springBootDependenciesFixedVersion);
+        AddExtraDependenciesToManagementEntry();
         SortFixedVersionEntries(versionComparator);
     }
 
@@ -114,13 +131,17 @@ public class JarDependencies {
         }
     }
 
-    private void AddSpringDependencyManagementEntry(String fixedVersionInput){
+    private void AddExtraDependenciesToManagementEntry(){
         String packageName = "org.springframework.boot:spring-boot-dependencies";
         String installedVersion = "3.2.0";
-        String fixedVersion = fixedVersionInput;
         String description = "Configuration for Dependency management's element: spring-boot-dependencies";
-        PackageDetails packageDetails = new PackageDetails(packageName,installedVersion,fixedVersion,description);
+        PackageDetails packageDetails = new PackageDetails(packageName,installedVersion,springBootDependenciesFixedVersion,description);
         dependencyMap.put(packageDetails.getNameNode().getArtifactID(),packageDetails);
+        packageName = "com.google.guava:guava";
+        installedVersion="32.0.0";
+        description = "Guava dependency vulnerability entry";
+        PackageDetails guavaPackageDetails = new PackageDetails(packageName,installedVersion,guavaDependencyFixedVersion,description);
+        dependencyMap.put(guavaPackageDetails.getNameNode().getArtifactID(),guavaPackageDetails);
 
     }
 
