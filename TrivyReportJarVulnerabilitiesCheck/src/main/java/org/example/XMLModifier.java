@@ -147,7 +147,7 @@ public class XMLModifier {
 
         log.info("Dependency version: " + version);
         //Compare
-        if(!(version.equalsIgnoreCase(fixedVersion)))
+        if(JarDependencies.versionComparator.compare(fixedVersion,version)<0)
             isVulnerable = true;
         if(isVulnerable){
             log.info("The artifact **"+artifact+"** is vulnerable.");

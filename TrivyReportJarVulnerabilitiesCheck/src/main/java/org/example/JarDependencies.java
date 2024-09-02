@@ -14,6 +14,28 @@ public class JarDependencies {
 
     private final String springBootDependenciesFixedVersion = "3.3.2";
 
+    //Create comparator object for sorting the version descending.
+    public static Comparator<String> versionComparator = new Comparator<String>() {
+        @Override
+        public int compare(String v1, String v2) {
+            String[] version1 = v1.split("\\.");
+            String[] version2 = v2.split("\\.");
+            int len = Math.max(version1.length, version2.length);
+            for (int i = 0; i < len; i++) {
+                Integer num1 = 0;
+                if(i< version1.length)
+                    num1 = Integer.parseInt(version1[i]);
+                Integer num2 = 0;
+                if(i< version2.length)
+                    num2 = Integer.parseInt(version2[i]);
+                int comparison = num2.compareTo(num1);
+                if(comparison != 0)
+                    return comparison;
+            }
+            return 0;
+        }
+    };
+
     public JarDependencies() {
         this.dependencyMap = new HashMap<>();
     }
@@ -32,27 +54,7 @@ public class JarDependencies {
             JSonHeader header = headerList.get(i);
             IterateHeader(header);
         }
-        //Create comparator object for sorting the version descending.
-        Comparator<String> versionComparator = new Comparator<String>() {
-            @Override
-            public int compare(String v1, String v2) {
-                String[] version1 = v1.split("\\.");
-                String[] version2 = v2.split("\\.");
-                int len = Math.max(version1.length, version2.length);
-                for (int i = 0; i < len; i++) {
-                    Integer num1 = 0;
-                    if(i< version1.length)
-                        num1 = Integer.parseInt(version1[i]);
-                    Integer num2 = 0;
-                    if(i< version2.length)
-                        num2 = Integer.parseInt(version2[i]);
-                    int comparison = num2.compareTo(num1);
-                    if(comparison != 0)
-                        return comparison;
-                }
-                return 0;
-            }
-        };
+
         AddSpringDependencyManagementEntry(springBootDependenciesFixedVersion);
         SortFixedVersionEntries(versionComparator);
     }
