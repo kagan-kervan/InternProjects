@@ -137,11 +137,6 @@ public class JarDependencies {
         String description = "Configuration for Dependency management's element: spring-boot-dependencies";
         PackageDetails packageDetails = new PackageDetails(packageName,installedVersion,springBootDependenciesFixedVersion,description);
         dependencyMap.put(packageDetails.getNameNode().getArtifactID(),packageDetails);
-        packageName = "com.google.guava:guava";
-        installedVersion="32.0.0";
-        description = "Guava dependency vulnerability entry";
-        PackageDetails guavaPackageDetails = new PackageDetails(packageName,installedVersion,guavaDependencyFixedVersion,description);
-        dependencyMap.put(guavaPackageDetails.getNameNode().getArtifactID(),guavaPackageDetails);
 
     }
 
