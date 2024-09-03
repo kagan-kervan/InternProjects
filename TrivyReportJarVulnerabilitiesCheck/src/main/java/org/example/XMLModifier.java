@@ -110,6 +110,11 @@ public class XMLModifier {
         Node artifactNode = GetArtifactNodeFromDependencyNode(dependencyNode);
         String artifact = artifactNode.getFirstChild().getNodeValue();
         log.info("Found the artifact ----> "+artifact);
+        if(artifact.equalsIgnoreCase("mysql-connector-j")){
+            Node groupNode = GetGroupNodeFromDependencyNode(dependencyNode);
+            ChangeGroupNameFromNode(groupNode,"com.mysql");
+        }
+
         if(!(packageDetailsHashMap.containsKey(artifact))){
             log.info("Package "+artifact+" is invulnerable...");
             return false;
@@ -193,6 +198,18 @@ public class XMLModifier {
             artifactNode = artifactNode.getNextSibling();
         }
         return artifactNode;
+    }
+
+    private Node GetGroupNodeFromDependencyNode(Node node){
+        Node groupNode = node.getFirstChild();
+        while(!groupNode.getNodeName().equalsIgnoreCase("groupId")){
+            groupNode = groupNode.getNextSibling();
+        }
+        return groupNode;
+    }
+
+    private void ChangeGroupNameFromNode(Node groupNode, String newName){
+        groupNode.getFirstChild().setNodeValue(newName);
     }
 
     private Node FindPropertiesFromDocument(Document doc) {
