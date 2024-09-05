@@ -20,19 +20,21 @@ public class GreetingResource {
     @Inject
     GreetingsService service;
 
-    private final GreeterGrpc.GreeterBlockingStub blockingStub;
-
-    @Inject
-    public GreetingResource(GreeterGrpc.GreeterBlockingStub greeterBlockingStub){
-        this.blockingStub = greeterBlockingStub;
-    }
-    @GET
-    @Path("/grpc/{name}")
-    public String HelloFromGRPC(String name){
-        HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-        HelloReply reply = blockingStub.sayHello(request);
-        return reply.getMessage();
-    }
+//    private final GreeterGrpc.GreeterBlockingStub blockingStub;
+//
+//    public GreeterGrpc.GreeterBlockingStub getBlockingStub(){return blockingStub;}
+//
+//    @Inject
+//    public GreetingResource(GreeterGrpc.GreeterBlockingStub greeterBlockingStub){
+//        this.blockingStub = greeterBlockingStub;
+//    }
+//    @GET
+//    @Path("/grpc/{name}")
+//    public String HelloFromGRPC(String name){
+//        HelloRequest request = HelloRequest.newBuilder().setName(name).build();
+//        HelloReply reply = blockingStub.sayHello(request);
+//        return reply.getMessage();
+//    }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
