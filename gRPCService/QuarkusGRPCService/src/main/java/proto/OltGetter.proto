@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.acme.protos";
+option java_outer_classname = "OltGetterProto";
+
+package grpcAPIs;
+
+service OltGetter{
+  rpc GetOlt(OltRequest) returns (OltResponse){}
+}
+
+message OltRequest{
+  string oltName = 1;
+}
+
+message OltResponse{
+  string message = 1;
+}

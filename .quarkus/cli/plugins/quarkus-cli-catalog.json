@@ -1,0 +1,13 @@
+{
+  "version" : "v1",
+  "lastUpdate" : "05/09/2024 14:58:27",
+  "plugins" : {
+    "grpc" : {
+      "name" : "grpc",
+      "type" : "maven",
+      "location" : "io.quarkus:quarkus-grpc-cli:3.14.2",
+      "description" : null,
+      "inProjectCatalog" : false
+    }
+  }
+}

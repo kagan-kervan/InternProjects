@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.service;
 
 import io.grpc.stub.StreamObserver;
 import io.quarkus.grpc.GrpcService;
