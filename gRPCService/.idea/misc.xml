@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="Quarkus" url="file://$PROJECT_DIR$/gRPCClient" />
-    <file type="Quarkus" url="file://$PROJECT_DIR$/QuarkusGRPCService" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/GrpcClient" />
+    <file type="Quarkus" url="file://$PROJECT_DIR$/QuarkusGrpcService" />
   </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.grpcService</groupId>
-	<artifactId>gRPCClient</artifactId>
+	<artifactId>GrpcClient</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gRPCClient</name>
 	<description>gRPC client in Spring boot.</description>
@@ -44,7 +44,7 @@
 
 		<dependency>
 			<groupId>org.acme</groupId>
-			<artifactId>QuarkusGRPCService</artifactId>
+			<artifactId>QuarkusGrpcService</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
