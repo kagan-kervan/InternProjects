@@ -32,57 +32,10 @@ public class ThreadService {
     private static final int THREAD_SLEEP_VALUE = 1000;
 
 
-    private ThreadLocal<ThreadData> localThreadData;
-    @GrpcClient("helloServer")
-    private GreeterGrpc.GreeterStub blockingStub;
-    @GrpcClient("helloServer")
-    private GreeterGrpc.GreeterStub asyncStub;
-
-
 
 
     public ThreadService(){
-        //Create ThreadData instances for each thread.
-        localThreadData = ThreadLocal.withInitial(ThreadData::new);
-        log.info("Creating Stubs for gRPC servers...");
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost",9000).usePlaintext().build();
-        this.blockingStub = GreeterGrpc.newStub(channel);
-    }
 
-    public void startThreadingTest() throws InterruptedException {
-        List<Long> submissionTimes = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-        log.info("Starting gRPC call iterations..");
-        IntStream.range(0,TOTAL_CALLS).forEach( i-> {
-            long submissionTime = System.nanoTime();
-            submissionTimes.add(submissionTime);
-            executorService.submit(
-                    () -> {
-                        long startExecutionTime = System.nanoTime();
-                        ThreadData threadData = localThreadData.get();
-                        long waitingTime = startExecutionTime - submissionTime;
-                        threadData.addToTotalWaitingTime(waitingTime);
-                        log.info("Wait time: "+waitingTime+" ns");
-                        threadData.incrementTaskCount();
-                        //Do the server call thing.
-                        log.info("Task with selected server is running on "+ Thread.currentThread().getName());
-                        long finishExecutionTime = System.nanoTime();
-                        long executionTime = finishExecutionTime-startExecutionTime;
-                        threadData.addToExecutionTime(executionTime);
-                        log.info("Working time = "+executionTime+" ns");
-                    }
-            );
-        });
-        //executorService.shutdown();
-        executorService.awaitTermination(15, TimeUnit.SECONDS);
-        executorService.shutdown();
-        executorService.submit( () -> {
-           ThreadData threadData = localThreadData.get();
-           log.info("Thread name: "+Thread.currentThread().getName()+"\t Informations:");
-           log.info("Total task completed: "+threadData.getTaskCount());
-           log.info("Average execution time: "+threadData.getAverageExecutionTime());
-           log.info("Average waiting time: "+threadData.getAverageWaitingTime());
-        });
     }
 
     public void testThreading() throws InterruptedException {
@@ -125,8 +78,8 @@ public class ThreadService {
             }
         });
         executorService.awaitTermination(60,TimeUnit.SECONDS);
-        helloWorldThread.stop();
-        oltGetterThread.stop();
+//        helloWorldThread.stop();
+//        oltGetterThread.stop();
         pingServerThread.stop();
         executorService.shutdownNow();
         log.info("hello world count: "+helloWorldThread.getRunCount());
