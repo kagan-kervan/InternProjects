@@ -4,7 +4,7 @@ import com.grpcService.gRPCClient.service.ServiceCaller;
 import lombok.extern.java.Log;
 
 @Log
-public class LoadThread implements Runnable{
+public class PingThread implements Runnable{
 
     private String name;
     private long sleepMiliSeconds;
@@ -25,7 +25,7 @@ public class LoadThread implements Runnable{
         runCount = runCount + 1;
     }
 
-    public LoadThread(String name, long sleepMiliseconds, ServiceCaller serviceCaller) {
+    public PingThread(String name, long sleepMiliseconds, ServiceCaller serviceCaller) {
         this.name = name;
         this.sleepMiliSeconds = sleepMiliseconds;
         this.serviceCaller = serviceCaller;
@@ -33,14 +33,16 @@ public class LoadThread implements Runnable{
     }
     @Override
     public void run() {
-        try {
-            log.info("Thread " + name + " started.");
-            serviceCaller.call();
-            startingTime = System.nanoTime();
-            Thread.sleep(sleepMiliSeconds);
-            incrementRunCount();
-        }catch (Exception e) {
-            e.printStackTrace();
+        startingTime = System.currentTimeMillis();
+        long previousTime = 0;
+        while(running){
+            long currentTime = System.currentTimeMillis();
+            if(currentTime - previousTime >= 4000){
+                log.info("Thread "+name+" started..");
+                serviceCaller.call();
+                incrementRunCount();
+                previousTime = currentTime;
+            }
         }
     }
 

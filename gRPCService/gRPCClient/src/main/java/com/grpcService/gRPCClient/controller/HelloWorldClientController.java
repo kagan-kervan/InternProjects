@@ -20,7 +20,7 @@ public class HelloWorldClientController {
 
      @GetMapping(path = "/hello/")
     public void getGreeting(@RequestParam String name){
-         clientService.ReceiveHello(name);
+         clientService.receiveHello(name);
      }
 
      @GetMapping(path = "/thread/")

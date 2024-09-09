@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.acme.protos";
+option java_outer_classname = "UserAlarmProto";
+
+package grpcAPIs;
+
+service AlarmService {
+  rpc getUserDetail(AlarmRequest) returns (AlarmResponse){}
+}
+
+message AlarmRequest{
+  string name = 1;
+}
+message AlarmResponse{
+  string message = 1;
+}

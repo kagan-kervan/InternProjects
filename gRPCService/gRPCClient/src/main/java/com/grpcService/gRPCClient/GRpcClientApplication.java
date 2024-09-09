@@ -8,12 +8,12 @@ public class GRpcClientApplication {
 
 	public static void main(String[] args) {
         SpringApplication.run(GRpcClientApplication.class, args);
-		ThreadService service = new ThreadService();
-		try {
-			service.testThreading();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+//		ThreadService service = new ThreadService();
+//		try {
+//			service.testThreading();
+//		} catch (InterruptedException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 }
