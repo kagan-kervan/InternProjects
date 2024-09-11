@@ -37,7 +37,7 @@ public class LoadThread implements Runnable{
             log.info("Thread " + name + " started.");
             serviceCaller.call();
             startingTime = System.nanoTime();
-            Thread.sleep(sleepMiliSeconds);
+//            Thread.sleep(sleepMiliSeconds);
             incrementRunCount();
         }catch (Exception e) {
             e.printStackTrace();
@@ -52,6 +52,6 @@ public class LoadThread implements Runnable{
     }
     public void stop() {
         this.running = false;
-        log.info("Stop the thread...");
+        log.info("Stop the thread .."+name);
     }
 }

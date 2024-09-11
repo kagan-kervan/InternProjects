@@ -14,17 +14,25 @@ import org.springframework.stereotype.Service;
 @Log
 public class OltGetterClientService implements ServiceCaller{
     @GrpcClient("oltGetterService")
-    private OltGetterGrpc.OltGetterStub oltGetterStub;
+    private OltGetterGrpc.OltGetterStub asyncOltGetterStub;
+    @GrpcClient("oltGetterService")
+    private OltGetterGrpc.OltGetterBlockingStub syncOltGetterStub;
 
     public OltGetterClientService(){
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost",9000).usePlaintext().build();
-        oltGetterStub = OltGetterGrpc.newStub(channel);
+        asyncOltGetterStub = OltGetterGrpc.newStub(channel);
+        syncOltGetterStub = OltGetterGrpc.newBlockingStub(channel);
     }
 
     @Override
     public void call() {
         OltRequest oltRequest = OltRequest.newBuilder().setOltName("SPON-10730").build();
-        oltGetterStub.getOlt(oltRequest, new StreamObserver<OltResponse>() {
+        log.info("Started OLT client ..");
+        syncCall(oltRequest);
+    }
+
+    private void asyncCall(OltRequest oltRequest){
+        asyncOltGetterStub.getOlt(oltRequest, new StreamObserver<OltResponse>() {
             @Override
             public void onNext(OltResponse oltResponse) {
                 log.info("Received message : "+oltResponse.getMessage());
@@ -41,6 +49,10 @@ public class OltGetterClientService implements ServiceCaller{
                 log.info("OltGetter Service request completed successfully");
             }
         });
+    }
+
+    private void syncCall(OltRequest oltRequest){
+        log.info("Message: "+syncOltGetterStub.getOlt(oltRequest).getMessage());
     }
 
 }

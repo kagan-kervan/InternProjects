@@ -15,35 +15,20 @@ import org.springframework.stereotype.Service;
 @Log
 public class HelloWorldClientService implements ServiceCaller {
     @GrpcClient("helloServer")
-    private GreeterGrpc.GreeterStub blockingStub;
+    private GreeterGrpc.GreeterBlockingStub blockingStub;
     @GrpcClient("helloServer")
     private GreeterGrpc.GreeterStub asyncStub;
 
 
     public HelloWorldClientService(){
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost",9000).usePlaintext().build();
-        this.blockingStub = GreeterGrpc.newStub(channel);
+        this.blockingStub = GreeterGrpc.newBlockingStub(channel);
     }
 
     public void receiveHello(String name){
         HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-        blockingStub.sayHello(request, new StreamObserver<HelloReply>() {
-            @Override
-            public void onNext(HelloReply helloReply) {
-                log.info("Received Message: "+helloReply.getMessage());
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                System.err.println("Error for request " + ": " + throwable.getMessage());
-                throwable.printStackTrace();
-            }
-
-            @Override
-            public void onCompleted() {
-                log.info("HelloWorld Service request completed successfully");
-            }
-        });
+        log.info("Started Hello client ..");
+        log.info("Message: "+blockingStub.sayHello(request).getMessage());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.grpcService.gRPCClient;
 
 
-import com.grpcService.gRPCClient.ThreadData;
 import com.grpcService.gRPCClient.service.AlarmServerClientService;
 import com.grpcService.gRPCClient.service.HelloWorldClientService;
 import com.grpcService.gRPCClient.service.OltGetterClientService;
@@ -11,6 +10,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.quarkus.grpc.GrpcClient;
 import lombok.extern.java.Log;
 import org.acme.protos.GreeterGrpc;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,19 +26,22 @@ import java.util.stream.IntStream;
 public class ThreadService {
 
     //Constant variables for test
-    private static final int NUMBER_OF_THREADS = 40;
-    private static final int TOTAL_CALLS = 1000;
+    private static final int NUMBER_OF_THREADS = 120;
+    private static final int TOTAL_CALLS = 3000;
     private static final int NUMBER_OF_SERVER_APIS = 3;
     private static final int THREAD_SLEEP_VALUE = 1000;
 
+    private final PingThread pingServerThread;
 
 
 
-    public ThreadService(){
+    public ThreadService(PingThread pingServerThread){
 
+        this.pingServerThread = pingServerThread;
     }
 
     public void testThreading() throws InterruptedException {
+        pingServerThread.activate();
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
         long[] creationTimes = new long[TOTAL_CALLS];
         HelloWorldClientService helloWorldClientService = new HelloWorldClientService();
@@ -48,11 +51,10 @@ public class ThreadService {
         LoadThread helloWorldThread = new LoadThread("HelloWorldThread",THREAD_SLEEP_VALUE,helloWorldClientService);
         LoadThread oltGetterThread = new LoadThread("OltGetterThread",THREAD_SLEEP_VALUE,oltGetterClientService);
         LoadThread alarmThread = new LoadThread("AlarmServiceThread",THREAD_SLEEP_VALUE,alarmServerClientService);
-        PingThread pingServerThread = new PingThread("PingServerThread",THREAD_SLEEP_VALUE,pingServerClientService);
 
-        executorService.execute(() -> {
-            pingServerThread.run();
-        });
+//        executorService.execute(() -> {
+//            pingServerThread.run();
+//        });
         IntStream.range(0,TOTAL_CALLS).forEach( i -> {
             Random random = new Random();
             int threadChoice = random.nextInt(NUMBER_OF_SERVER_APIS);
@@ -77,11 +79,13 @@ public class ThreadService {
                     return;
             }
         });
-        executorService.awaitTermination(60,TimeUnit.SECONDS);
+
+        executorService.shutdown();
+        executorService.awaitTermination((long) ((TOTAL_CALLS/NUMBER_OF_THREADS)*3),TimeUnit.SECONDS);
 //        helloWorldThread.stop();
 //        oltGetterThread.stop();
         pingServerThread.stop();
-        executorService.shutdownNow();
+        //executorService.shutdownNow();
         log.info("hello world count: "+helloWorldThread.getRunCount());
         log.info("olt getter count: "+oltGetterThread.getRunCount());
         log.info("alarm server count: "+alarmThread.getRunCount());
@@ -98,6 +102,7 @@ public class ThreadService {
         log.info("OLT getter average waiting: " +oltGetterServerAverageWaiting+"ms");
         log.info("Alarm server average waiting: "+alarmServerWaiting+"ms");
 //        log.info("Ping server average waiting: " +pingServerAverageWaiting+"ms");
+        pingServerThread.printExecutionTimes();
     }
 
     private void executeThread(LoadThread loadThread, long creationTime){
