@@ -16,14 +16,14 @@ import org.acme.protos.HelloReply;
 @Log
 public class AlarmService extends AlarmServiceGrpc.AlarmServiceImplBase {
     @Override
-    @Blocking()
+    @Blocking
     public void getUserDetail(AlarmRequest request, StreamObserver<AlarmResponse> responseObserver) {
         log.info("Started alarm request..");
         long startTime = System.currentTimeMillis();
         String name = request.getName();
         String message = "Details of " + name;
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

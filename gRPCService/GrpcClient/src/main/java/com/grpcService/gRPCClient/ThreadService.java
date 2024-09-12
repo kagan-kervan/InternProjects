@@ -26,8 +26,8 @@ import java.util.stream.IntStream;
 public class ThreadService {
 
     //Constant variables for test
-    private static final int NUMBER_OF_THREADS = 120;
-    private static final int TOTAL_CALLS = 3000;
+    private static final int NUMBER_OF_THREADS = 50;
+    private static final int TOTAL_CALLS = 4800;
     private static final int NUMBER_OF_SERVER_APIS = 3;
     private static final int THREAD_SLEEP_VALUE = 1000;
 
@@ -40,9 +40,9 @@ public class ThreadService {
         this.pingServerThread = pingServerThread;
     }
 
-    public void testThreading() throws InterruptedException {
+    public void testThreading(int totalThreads, int totalCalls) throws InterruptedException {
         pingServerThread.activate();
-        ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+        ExecutorService executorService = Executors.newFixedThreadPool(totalThreads);
         long[] creationTimes = new long[TOTAL_CALLS];
         HelloWorldClientService helloWorldClientService = new HelloWorldClientService();
         OltGetterClientService oltGetterClientService = new OltGetterClientService();
@@ -52,10 +52,7 @@ public class ThreadService {
         LoadThread oltGetterThread = new LoadThread("OltGetterThread",THREAD_SLEEP_VALUE,oltGetterClientService);
         LoadThread alarmThread = new LoadThread("AlarmServiceThread",THREAD_SLEEP_VALUE,alarmServerClientService);
 
-//        executorService.execute(() -> {
-//            pingServerThread.run();
-//        });
-        IntStream.range(0,TOTAL_CALLS).forEach( i -> {
+        IntStream.range(0,totalCalls).forEach( i -> {
             Random random = new Random();
             int threadChoice = random.nextInt(NUMBER_OF_SERVER_APIS);
             creationTimes[i] = System.nanoTime();
@@ -81,7 +78,8 @@ public class ThreadService {
         });
 
         executorService.shutdown();
-        executorService.awaitTermination((long) ((TOTAL_CALLS/NUMBER_OF_THREADS)*3),TimeUnit.SECONDS);
+        while (!executorService.isTerminated()) {
+        }
 //        helloWorldThread.stop();
 //        oltGetterThread.stop();
         pingServerThread.stop();
@@ -91,17 +89,15 @@ public class ThreadService {
         log.info("alarm server count: "+alarmThread.getRunCount());
         log.info("ping server count: "+pingServerThread.getRunCount());
         double helloWorldServerAverageWaiting = TimeUnit.NANOSECONDS.toMillis
-                ((helloWorldThread.getTotalWaitingTime()/ helloWorldThread.getRunCount())- THREAD_SLEEP_VALUE);
+                (helloWorldThread.getTotalWaitingTime()/ helloWorldThread.getRunCount());
         double oltGetterServerAverageWaiting = TimeUnit.NANOSECONDS.toMillis
-                (oltGetterThread.getTotalWaitingTime()/ oltGetterThread.getRunCount()- THREAD_SLEEP_VALUE);
+                (oltGetterThread.getTotalWaitingTime()/ oltGetterThread.getRunCount());
         double alarmServerWaiting = TimeUnit.NANOSECONDS
-                .toMillis(alarmThread.getTotalWaitingTime()/alarmThread.getRunCount() - THREAD_SLEEP_VALUE);
-//        double pingServerAverageWaiting = TimeUnit.NANOSECONDS.toMillis
-//                (pingServerThread.getTotalWaitingTime()/ pingServerThread.getRunCount());
+                .toMillis(alarmThread.getTotalWaitingTime()/alarmThread.getRunCount());
+
         log.info("Hello world average waiting: " +helloWorldServerAverageWaiting+"ms");
         log.info("OLT getter average waiting: " +oltGetterServerAverageWaiting+"ms");
         log.info("Alarm server average waiting: "+alarmServerWaiting+"ms");
-//        log.info("Ping server average waiting: " +pingServerAverageWaiting+"ms");
         pingServerThread.printExecutionTimes();
     }
 

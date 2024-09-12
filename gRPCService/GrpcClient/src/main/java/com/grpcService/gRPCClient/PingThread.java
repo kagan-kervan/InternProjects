@@ -29,7 +29,7 @@ public class PingThread implements Runnable{
 
     public boolean isRunning(){return running;}
 
-    public int getRunCount(){return runCount;}
+    public int getRunCount(){return executionTimes.size();}
     public void incrementRunCount(){
         runCount = runCount + 1;
     }
@@ -51,6 +51,7 @@ public class PingThread implements Runnable{
         serviceCaller.call();
         long finishTime = System.nanoTime();
         executionTimes.add((finishTime-startingTime)); // Keep the execution times
+        log.info("Executed time: "+(double)(finishTime-startingTime)/1000000+"ms");
         incrementRunCount();
     }
 

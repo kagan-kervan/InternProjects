@@ -21,7 +21,7 @@ public class OltGetterService extends OltGetterGrpc.OltGetterImplBase {
         String newOltMessage = "Sending OLT "+request.getOltName()+" to Client...";
         OltResponse oltResponse = OltResponse.newBuilder().setMessage(newOltMessage).build();
         try {
-            Thread.sleep(1500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
